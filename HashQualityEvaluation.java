@@ -1,8 +1,6 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,8 +16,8 @@ public class HashQualityEvaluation {
         return arr;
     }
 
-    static int[] generateInput2(int n) {
-        int seed = 42;
+    //Added seed as argument - as explained by Matti on Teams
+    static int[] generateInput2(int n, int seed) {
         Set<Integer> elements = new HashSet<>();
         while (elements.size() != n) {
             int randInt = ThreadLocalRandom.current().nextInt(1, seed);
@@ -28,14 +26,26 @@ public class HashQualityEvaluation {
         return elements.stream().mapToInt(i -> i).toArray();
     }
 
+    //Added new method because the above did not work for me
+    static int[] generateInputUniqueRandom(int n, int seed) {
+        Random rand = new Random(seed);
+        Set<Integer> elements = new HashSet<>();
+        while (elements.size() < n) {
+            while (elements.add(rand.nextInt()) != true) {}
+        }
+        return elements.stream().mapToInt(Integer::intValue).toArray();
+    }
+
     public static void main(String[] args) {
 
-        int[] arr = new Random().ints(1000000, 1, 1000000).map(i -> HyperLogLog.h(i)).toArray();
+        HyperLogLog loglog = new HyperLogLog(1024);
+
+        int[] arr = new Random().ints(1000000, 1, 1000000).map(i -> loglog.h(i)).toArray();
 
         HashMap<Integer, Integer> p_distribution = new HashMap<>();
 
         for (int i = 0; i < arr.length; i++) {
-            int key = HyperLogLog.p(arr[i]); // get p-value
+            int key = loglog.p(arr[i]); // get p-value
             if (p_distribution.containsKey(key)) {
                 int count = p_distribution.get(key);
                 count++;
