@@ -31,7 +31,8 @@ public class HashQualityEvaluation {
         Random rand = new Random(seed);
         Set<Integer> elements = new HashSet<>();
         while (elements.size() < n) {
-            while (elements.add(rand.nextInt()) != true) {}
+            int random_no = rand.nextInt(Integer.MAX_VALUE);
+                while ((elements.add(random_no) != true) && (random_no != 0)) {}
         }
         return elements.stream().mapToInt(Integer::intValue).toArray();
     }
