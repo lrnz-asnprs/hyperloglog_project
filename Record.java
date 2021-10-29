@@ -4,10 +4,10 @@ class Record {
   private final int n;
   private final int m;
   private final double sigma;
-  private int[] results;
+  private double[] results;
 
 
-  public Record(int n, int m, int[] data){
+  public Record(int n, int m, double[] data){
     this.n = n;
     this.m = m;
     this.sigma = 1.04/Math.sqrt((double)m);
@@ -17,7 +17,7 @@ class Record {
 
   private int getSigmaN(int m){
     int count = 0;
-    for (int r : results){
+    for (double r : results){
       if (((double) n - sigma*m) <= r && r <= ((double) n + sigma*m)) count++;
     }
     return count;

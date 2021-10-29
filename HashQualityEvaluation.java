@@ -2,8 +2,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class HashQualityEvaluation {
 
@@ -13,16 +16,37 @@ public class HashQualityEvaluation {
         return arr;
     }
 
-    
-    
+    //Added seed as argument - as explained by Matti on Teams
+    static int[] generateInput2(int n, int seed) {
+        Set<Integer> elements = new HashSet<>();
+        while (elements.size() != n) {
+            int randInt = ThreadLocalRandom.current().nextInt(1, seed);
+            elements.add(randInt);
+        }
+        return elements.stream().mapToInt(i -> i).toArray();
+    }
+
+    //Added new method because the above did not work for me
+    static int[] generateInputUniqueRandom(int n, int seed) {
+        Random rand = new Random(seed);
+        Set<Integer> elements = new HashSet<>();
+        while (elements.size() < n) {
+            int random_no = rand.nextInt(Integer.MAX_VALUE);
+                while ((elements.add(random_no) != true) && (random_no != 0)) {}
+        }
+        return elements.stream().mapToInt(Integer::intValue).toArray();
+    }
+
     public static void main(String[] args) {
-        
-        int[] arr = new Random().ints(1000000, 1, 1000000).map(i -> HyperLogLog.h(i)).toArray();
-        
+
+        HyperLogLog loglog = new HyperLogLog(1024);
+
+        int[] arr = new Random().ints(1000000, 1, 1000000).map(i -> loglog.h(i)).toArray();
+
         HashMap<Integer, Integer> p_distribution = new HashMap<>();
-        
+
         for (int i = 0; i < arr.length; i++) {
-            int key = HyperLogLog.p(arr[i]); // get p-value 
+            int key = loglog.p(arr[i]); // get p-value
             if (p_distribution.containsKey(key)) {
                 int count = p_distribution.get(key);
                 count++;
@@ -42,17 +66,15 @@ public class HashQualityEvaluation {
         /**
          * Write results to file
          */
-        
+
         String eol = System.getProperty("line.separator");
-    
+
         try (Writer writer = new FileWriter("hash_quality_results.csv")) {
             writer.append("p-value,frequency").append(eol);
             for (Map.Entry<Integer, Integer> entry : p_distribution.entrySet()) {
-            writer.append(Integer.toString(entry.getKey()))
-              .append(',')
-              .append(Integer.toString(entry.getValue()))
-              .append(eol);
-        }
+                writer.append(Integer.toString(entry.getKey())).append(',').append(Integer.toString(entry.getValue()))
+                        .append(eol);
+            }
         } catch (IOException ex) {
             ex.printStackTrace(System.err);
         }
