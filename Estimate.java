@@ -7,8 +7,15 @@ public class Estimate {
     private double[] results;
     private int runs;
     private HyperLogLog estimator;
+    private final double sigma;
+    private int first_std_dev;
+    private int second_std_dev;
+
 
     public Estimate(int n, int m, int runs) {
+        this.sigma = 1.04/Math.sqrt((double)m);
+        this.first_std_dev = 0;
+        this.second_std_dev = 0;
         this.n = n;
         this.m = m;
         this.runs = runs;
@@ -21,7 +28,10 @@ public class Estimate {
         for (int i=0; i < runs; i++) { 
             int[] input = HashQualityEvaluation.generateInputUniqueRandom(n, i); //generate random input of size n and i simply be seed value
             estimator.setRegistersInput(input);
-            results[i] = estimator.estimate();
+            double res = estimator.estimate();
+            results[i] = res;
+            if ((double) n*(1-1*sigma) <= res && res <= (double) n*(1+1*sigma)) first_std_dev++;
+            if ((double) n*(1-2*sigma) <= res && res <= (double) n*(1+2*sigma)) second_std_dev++;
         }
     }
 
@@ -36,6 +46,12 @@ public class Estimate {
     }
     public double[] getResults() {
         return this.results;
+    }
+    public int getSigma1() {
+        return this.first_std_dev;
+    }
+    public int getSigma2() {
+        return this.second_std_dev;
     }
     
 

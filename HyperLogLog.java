@@ -21,6 +21,17 @@ public class HyperLogLog {
         this.m = m;
     }
 
+    // Function to calculate the
+    // log base 2 of an integer
+    private static int log2(int N)
+    {
+        // calculate log2 N indirectly
+        // using log() method
+        int result = (int)(Math.log(N) / Math.log(2));
+  
+        return result;
+    }
+
     public void setRegisters() throws NumberFormatException, IOException {
         M = new int[(int) m];
         br = new BufferedReader(new InputStreamReader(System.in));
@@ -59,6 +70,7 @@ public class HyperLogLog {
     }
 
     public int f(int x) {
+        // int bitshift = 31-log2((int) m);
         return ((x * 0xbc164501) & 0x7fffffff) >> 21;
     }
 
