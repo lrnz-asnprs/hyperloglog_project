@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.BitSet;
 
 public class Estimate {
 
@@ -26,7 +27,7 @@ public class Estimate {
     public void generateResults() throws NumberFormatException, IOException {
 
         for (int i=0; i < runs; i++) { 
-            int[] input = HashQualityEvaluation.generateInputUniqueRandom(n, i); //generate random input of size n and i simply be seed value
+            BitSet input = HashQualityEvaluation.bitInput(n, i); //generate random input of size n and i simply be seed value
             estimator.setRegistersInput(input);
             double res = estimator.estimate();
             results[i] = res;

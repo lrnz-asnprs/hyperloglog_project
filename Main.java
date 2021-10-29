@@ -24,8 +24,8 @@ public class Main {
          * -> Put in array of Estimate objects
          */
 
-        int[] N = {10000, 10000, 10000, 10000, 10000};
-        int[] M = {500, 1026, 1028, 1030, 1500};
+        int[] N = {1000000,1000000,1000000};
+        int[] M = {256,512,1024};
 
         Estimate[] estimates = new Estimate[N.length];
 

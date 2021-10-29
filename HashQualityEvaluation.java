@@ -1,41 +1,55 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
+
 
 public class HashQualityEvaluation {
 
-    public static int[] generateInput(int n) {
-        long seed = 42;
-        int[] arr = new Random(seed).ints(n, 1, n + 1).toArray();
-        return arr;
-    }
-
-    //Added seed as argument - as explained by Matti on Teams
-    static int[] generateInput2(int n, int seed) {
-        Set<Integer> elements = new HashSet<>();
-        while (elements.size() != n) {
-            int randInt = ThreadLocalRandom.current().nextInt(1, seed);
-            elements.add(randInt);
-        }
-        return elements.stream().mapToInt(i -> i).toArray();
-    }
-
-    //Added new method because the above did not work for me
-    static int[] generateInputUniqueRandom(int n, int seed) {
+    static BitSet bitInput(int N, int seed) {
+        BitSet bs = new BitSet(Integer.MAX_VALUE);
         Random rand = new Random(seed);
-        Set<Integer> elements = new HashSet<>();
-        while (elements.size() < n) {
-            int random_no = rand.nextInt(Integer.MAX_VALUE);
-                while ((elements.add(random_no) != true) && (random_no != 0)) {}
+        int cardinality = 0;
+        while (cardinality < N) {
+            int v = rand.nextInt(Integer.MAX_VALUE);
+            if (!bs.get(v)) {
+                bs.set(v);
+                cardinality++;
+            }
         }
-        return elements.stream().mapToInt(Integer::intValue).toArray();
+        return bs;
+        
     }
+
+    // public static int[] generateInput(int n) {
+    //     long seed = 42;
+    //     int[] arr = new Random(seed).ints(n, 1, n + 1).toArray();
+    //     return arr;
+    // }
+
+    // //Added seed as argument - as explained by Matti on Teams
+    // static int[] generateInput2(int n, int seed) {
+    //     Set<Integer> elements = new HashSet<>();
+    //     while (elements.size() != n) {
+    //         int randInt = ThreadLocalRandom.current().nextInt(1, seed);
+    //         elements.add(randInt);
+    //     }
+    //     return elements.stream().mapToInt(i -> i).toArray();
+    // }
+
+    // //Added new method because the above did not work for me
+    // static int[] generateInputUniqueRandom(int n, int seed) {
+    //     Random rand = new Random(seed);
+    //     Set<Integer> elements = new HashSet<>();
+    //     while (elements.size() < n) {
+    //         int random_no = rand.nextInt(Integer.MAX_VALUE);
+    //             while ((elements.add(random_no) != true) && (random_no != 0)) {}
+    //     }
+    //     return elements.stream().mapToInt(Integer::intValue).toArray();
+    // }
 
     public static void main(String[] args) {
 
