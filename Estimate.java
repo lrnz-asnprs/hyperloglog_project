@@ -12,7 +12,6 @@ public class Estimate {
         this.n = n;
         this.m = m;
         this.runs = runs;
-        results = new double[runs];
         estimator = new HyperLogLog(m);
     }
 
