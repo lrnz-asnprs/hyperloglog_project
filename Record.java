@@ -1,3 +1,4 @@
+
 class Record {
 
 
@@ -18,7 +19,8 @@ class Record {
   private int getSigmaN(int m){
     int count = 0;
     for (double r : results){
-      if (((double) n - sigma*m) <= r && r <= ((double) n + sigma*m)) count++;
+      if ((double) n*(1-m*sigma) <= r && r <= (double) n*(1+m*sigma)) count++;
+      // if (((double) n - sigma*m) <= r && r <= ((double) n + sigma*m)) count++;
     }
     return count;
   }

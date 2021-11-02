@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.BitSet;
 
 public class HyperLogLog {
 
@@ -21,35 +22,37 @@ public class HyperLogLog {
         this.m = m;
     }
 
-    public void setRegisters() throws NumberFormatException, IOException {
-        M = new int[(int) m];
-        br = new BufferedReader(new InputStreamReader(System.in));
-        threshold = Integer.parseInt(br.readLine());
-
-        br.lines().forEach(i -> register(i));
+    // Function to calculate the
+    // log base 2 of an integer
+    private static int log2(int N)
+    {
+        return (int)(Math.log(N) / Math.log(2)); 
     }
+
+    // public void setRegisters() throws NumberFormatException, IOException {
+    //     M = new int[(int) m];
+    //     br = new BufferedReader(new InputStreamReader(System.in));
+    //     br.lines().forEach(i -> register(i));
+    // }
 
     //Needed new method to instantiate the object without reading from stream
-    public void setRegistersInput(int[] inputList) throws NumberFormatException, IOException {
+    public void setRegistersInput(BitSet bs) {
         M = new int[(int) m];
-        for (int number : inputList) {
-            registerInt(number);
-        }
+        bs.stream().forEach(i->registerInt(i));
     }
 
 
-    public void register(String input) {
-        int y = Integer.parseInt(input);
-        int j = f(y);
-        int x = h(y);
-        int px = p(x);
-        if (px > M[j]) {
-            M[j] = px;
-        }
-    }
+    // public void register(String input) {
+    //     int y = Integer.parseInt(input);
+    //     int j = f(y);
+    //     int x = h(y);
+    //     int px = p(x);
+    //     if (px > M[j]) {
+    //         M[j] = px;
+    //     }
+    // }
 
-    public void registerInt(int input) {
-        int y = input;
+    public void registerInt(int y) {
         int j = f(y);
         int x = h(y);
         int px = p(x);
@@ -59,8 +62,10 @@ public class HyperLogLog {
     }
 
     public int f(int x) {
-        return ((x * 0xbc164501) & 0x7fffffff) >> 21;
+        int bitshift = 31-log2((int) m);
+        return ((x * 0xbc164501) & 0x7fffffff) >> bitshift;
     }
+
 
     public int h(int x) {
         int h = 0;
@@ -113,11 +118,5 @@ public class HyperLogLog {
         return 0.7213 / (1.0 + (1.079 / m));
     }   
 
-    //Commented out, because methods are not static anymore
-    
-    // public public void main(String[] args) throws NumberFormatException, IOException {
-    //     m = 1024;
-    //     setRegisters();
-    //     System.out.println(estimate() > threshold ? "above" : "below");
-    // }
+
 }
