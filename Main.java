@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
 
@@ -24,8 +23,8 @@ public class Main {
          * -> Put in array of Estimate objects
          */
 
-        int[] N = {1000000,1000000,1000000,1000000};
-        int[] M = {256,512,1024,2048};
+        int[] N = {10, 10000,10000000,10, 10000,10000000,10, 10000,10000000};
+        int[] M = {64,64,64,256,256,256,2048,2048,2048};
 
         Estimate[] estimates = new Estimate[N.length];
 
