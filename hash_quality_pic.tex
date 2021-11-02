@@ -1,0 +1,44 @@
+\begin{tikzpicture}
+	\begin{axis}[
+		title={Distribution of p-values \tableDir},
+		xlabel={p-value},
+                        xmode = lin, 
+                        log ticks with fixed point,
+                        ymode = log,
+		ylabel={count},
+		xmin=0, xmax=20,
+		ymin=0, ymax=600000
+		xtick={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
+		xtick={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
+		x tick label style={rotate=90,anchor=east},
+		ytick={500495
+, 125107
+, 30974
+, 7792
+, 1898
+, 486
+, 115
+, 39
+, 10
+, 1},
+		ytick={500495
+, 125107
+, 30974
+, 7792
+, 1898
+, 486
+, 115
+, 39
+, 10
+, 1},
+                legend style={at={(1.1,0)}, anchor=south west},
+                % legend pos=north east, %north west,
+		%ymajorgrids=true,
+		%grid style=dashed,
+	]
+        %	coordinates { (100,32)(200,37.8)(400,44.6)(800,61.8)(1600,83.8)(3200,114) };
+	\addplot[ color=red, mark=*,error bars/.cd,y dir=both,y explicit ]	table [x index=0, y index=1, y error index=2] {hash_quality_results.table};
+	
+	\end{axis}
+	\label{p_distribution}
+\end{tikzpicture}

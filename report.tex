@@ -1,0 +1,185 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{biblatex}
+\addbibresource{appliedBib.bib}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{mathpazo}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{pgfplots}
+\pgfplotsset{width=9cm,compat=1.13}
+\usepackage{pgfplotstable}
+\usepackage{verbatim}
+
+% Update this information to reflect yourself
+\title{Assignment 3: HyperLogLog}
+\author{Laurenz Aisenpreis, Kristof Gasior and Lasse Bach Andersen}
+\date{01-11-2021}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+In this assignment we were asked to implement the HyperLogLog algorithm, for estimating the number of distinct elements in a stream. The implementation was based on the pseudocode found in the Introduction paper, and on the CodeJudge assignements, which we used to verify the very basics of our solution. The quality of the hashing function was tested by comparing different register-sizes and input-sizes with the estimation error, and the results of our experiment are visualized in tables and histogram-plots.
+
+\section{Implementing the hash function}
+The Hash function \textit{h(x)}, takes an integer \textit{x} which can be represented as a vector by transforming it to a binary number. Calculating cross product of $\textbf{A}$ and $\vec{x}$ results in a vector $\vec{y}$. Performing modulo 2 $\vec{y}$ gives us a vector that can be interpreted as a binary number, i.e. the hashed value
+\section{Implementing the function p}
+For the hashing function in specific, bit-operations were applied for efficient calculations on the input matrix A [ ]. We used the built in\\{\tt Integer.numberOfLeadingZeros()} in java, adding 1 to get the position of the first 1.
+
+\section{Implementation HyperLogLog}
+The algorithm was implemented in Java 11.01, and we built an environment for tracking several records (the data generated from a certain amount of runs), which we used for calculating the fraction of runs within the standard deviations given in the Introduction paper.
+
+
+\section{Evaluating the quality of the hash function}
+The value of \emph{p} reflects the position of the first "1" bit from the left side in the binary number representation of an integer. For the left-most bit, the probability of the bit being 1 is 0.5. for the second bit also being 1 the probability will therefore be 0.5*0.5, and the i'th bit being 0.5 to the power of i, which is equivalent to \(Pr[p(y) = i] = 2^-i\). The distribution of p-values is shown in figure \ref{p_distribution}. The results clearly reflect the quality of our hash function, since the distribution of p-values roughly halves for whenever p is incremented. 
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+    	\begin{axis}[
+    		xlabel={p-value},
+                            xmode = lin, 
+                            log ticks with fixed point,
+                            ymode = log,
+    		ylabel={count},
+    		xmin=0, xmax=20,
+    		ymin=0, ymax=600000
+    		xtick={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
+    		xtick={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
+    		x tick label style={rotate=90,anchor=east},
+    		ytick={500495
+    , 125107
+    , 30974
+    , 7792
+    , 1898
+    , 486
+    , 115
+    , 39
+    , 10
+    , 1},
+    		ytick={500495
+    , 125107
+    , 30974
+    , 7792
+    , 1898
+    , 486
+    , 115
+    , 39
+    , 10
+    , 1},
+                    legend style={at={(1.1,0)}, anchor=south west},
+                    % legend pos=north east, %north west,
+    		%ymajorgrids=true,
+    		%grid style=dashed,
+    	]
+            %	coordinates { (100,32)(200,37.8)(400,44.6)(800,61.8)(1600,83.8)(3200,114) };
+    	\addplot[ color=red, mark=*,error bars/.cd,y dir=both,y explicit ]	table [x index=0, y index=1, y error index=2] {hash_quality_results.table};
+    	\end{axis}
+    	\label{p_distribution}
+    \end{tikzpicture}
+    \caption{Distribution of p-values}
+\end{figure}
+
+
+\section{Experiments}
+
+\subsection{Input function}
+Our input function takes a size \emph{n} and a seed value as arguments and generates a list of random distinct integers the following way: first, we initialize a \emph{BitSet}. Then, we add random elements to the set until the cardinality of the set quals \emph{n}.
+
+\subsection{Adaption of hash function}
+In order to adapt the hash function to different sizes of $m$, we have adjusted the function \(f\). Instead of having a fixed size bitshift (21), we added a dependence on \emph{m}, i.e. \(31-\lfloor\log_2(m)\rfloor\). Hence, we ensure that the range of hashed integers ${0,1,...,j}$ by function \(f\) will be in accordance to the register size \(m\), i.e. $j<m$. It is crucial to note that the relation of the register size and the hashed values of $f$ is best when \(m\) takes on a value of $2^k \text{ for any } k\in\mathbb{W}$. E.g. let $m=1576$, then according to our implementation we would now have 1576 registers, but our hashing function $f$ is only capable of hashing to $2^{\lfloor\log_2(1576)\rfloor}=2^{10}=1024$ registers.  
+
+\subsection{Relation of m and the estimation error}
+
+We have conducted an experiment for different sizes of \emph{m} and \emph{n} and computed the fraction of runs that resulted within one and two standard deviations of the true value. We decided to use values of \emph{n} such that \emph{n = \{10.000, 100.000, 10.000.000\}} and \emph{m} such that \emph{m = \{64, 256, 1024, 4096\}}. The results of our experiment reveal  interesting insights into the implementation of \emph{HyperLogLog} and the relation of different sizes of \emph{m} and \emph{n}.
+We note that an increase of the input size does not necessarily increase the prediction accuracy, nor does an increase of the size of \emph{m} for equal \emph{n}.  
+Whereas most of the observations fall within the expected range of the \emph{empirical rule}, i.e. that 68\% of the observed data will occur within the first standard deviation, and 95\% will take place in the second deviation, we do still observe outliers in our experiments. 
+First, the estimation is very accurate for \emph{n = 10.000} with \emph{m = 64}, but drops significantly when increasing \emph{n} by a factor of 10. Secondly, we observe a substantially low accuracy for \emph{n = 10.000} and \emph{m = 4096}. We hypothesize that the latter is due to the fact that the register size is too large for the relatively small input size. This would lead to few empty registers and a misleading estimation of \emph{HyperLogLog}, because a high \emph{p-value} in a register would not explain a lot of exchanges for this register anymore. To be more precise, a good hash function should distribute the hashed values uniformly, which is why we would expect to have at least one element in each register, but at most two for \emph{n = 10.000} and \emph{m = 4096}. However, \emph{HyperLogLog} makes an important assumption: if there is a high \emph{p-value} in a register, several other elements should have been mapped to the same register before, with lower \emph{p-values}. This is clearly not the case anymore with a ratio of \emph{m} and \emph{n} as given in this example. This is how we explain the high deviation in this case. 
+
+\begin{table}[h]
+\caption{Results, 100 runs}
+\centering \\
+\begin{tabular}{rrrr}\\
+ $n$ & $m$ & $n$\pm 1\sigma & $n$\pm 2\sigma \\ \hline
+10000 & 64 & 79\% & 99\% \\ 
+100000 & 64 & 68\% & 93\% \\ 
+1000000 & 64 & 59\% & 94\% \\ 
+10000000 & 64 & 73\% & 95\% \\ \hline
+10000 & 256 & 66\% & 96\% \\ 
+100000 & 256 & 70\% & 93\% \\ 
+1000000 & 256 & 61\% & 98\% \\ 
+10000000 & 256 & 69\% & 95\% \\ \hline 
+10000 & 1024 & 76\% & 97\% \\ 
+100000 & 1024 & 69\% & 97\% \\ 
+1000000 & 1024 & 69\% & 96\% \\ 
+10000000 & 1024 & 68\% & 98\% \\ \hline
+10000 & 4096 & 26\% & 64\% \\ 
+100000 & 4096 & 71\% & 97\% \\ 
+1000000 & 4096 & 69\% & 93\% \\ 
+10000000 & 4096 & 70\% & 98\% \\ 
+
+\end{tabular}
+\end{table}
+
+
+\section{Appendix}
+
+\begin{tikzpicture}
+	\begin{axis}[
+		title={Distribution of p-values \tableDir},
+		xlabel={p-value},
+                        xmode = lin, 
+                        log ticks with fixed point,
+                        ymode = log,
+		ylabel={count},
+		xmin=0, xmax=20,
+		ymin=0, ymax=600000
+		xtick={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
+		xtick={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20},
+		x tick label style={rotate=90,anchor=east},
+		ytick={500495
+, 125107
+, 30974
+, 7792
+, 1898
+, 486
+, 115
+, 39
+, 10
+, 1},
+		ytick={500495
+, 125107
+, 30974
+, 7792
+, 1898
+, 486
+, 115
+, 39
+, 10
+, 1},
+                legend style={at={(1.1,0)}, anchor=south west},
+                % legend pos=north east, %north west,
+		%ymajorgrids=true,
+		%grid style=dashed,
+	]
+        %	coordinates { (100,32)(200,37.8)(400,44.6)(800,61.8)(1600,83.8)(3200,114) };
+	\addplot[ color=red, mark=*,error bars/.cd,y dir=both,y explicit ]	table [x index=0, y index=1, y error index=2] {hash_quality_results.table};
+
+	
+	
+	\end{axis}
+	\label{p_distribution}
+\end{tikzpicture}
+
+
+
+
+
+\pagebreak
+\printbibliography
+
+\end{document}
