@@ -4,32 +4,30 @@ public class Main {
 
     // Function to calculate the
     // log base 2 of an integer
-    private static int log2(int N)
-    {
+    private static int log2(int N) {
         // calculate log2 N indirectly
         // using log() method
-        int result = (int)(Math.log(N) / Math.log(2));
-  
+        int result = (int) (Math.log(N) / Math.log(2));
+
         return result;
     }
 
     public static void main(String[] args) throws NumberFormatException, IOException {
 
         /**
-         * Create table:
-         * Make estimations for different input sizes n and m values
-         * -> Make estimate object for each
-         * -> Wrap all estimate objects in Record object
+         * Create table: Make estimations for different input sizes n and m values ->
+         * Make estimate object for each -> Wrap all estimate objects in Record object
          * -> Put in array of Estimate objects
          */
 
-        int[] N = {10, 10000,10000000,10, 10000,10000000,10, 10000,10000000};
-        int[] M = {64,64,64,256,256,256,2048,2048,2048};
+        int[] N = { 10000, 100000, 10000000, 10000, 100000, 10000000, 10000, 100000, 10000000, 10000, 100000,
+                10000000 };
+        int[] M = { 64, 64, 64, 256, 256, 256, 1024, 1024, 1024, 4096, 4096, 4096};
 
         Estimate[] estimates = new Estimate[N.length];
 
-        for (int i=0; i < N.length; i++) {
-            Estimate estimation = new Estimate(N[i], M[i], 100); //100 runs
+        for (int i = 0; i < N.length; i++) {
+            Estimate estimation = new Estimate(N[i], M[i], 100); // 100 runs
             estimation.generateResults();
             estimates[i] = estimation;
         }
@@ -48,8 +46,7 @@ public class Main {
         System.out.println(log2(1023));
 
         /**
-         * Diff 1
-         * -> add to right shift 21 -> 22
+         * Diff 1 -> add to right shift 21 -> 22
          */
 
     }
